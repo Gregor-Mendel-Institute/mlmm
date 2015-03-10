@@ -8,8 +8,8 @@ This repository contains R functions to carry out GWAS with MLMM and plot the re
 
 Two versions are currently available:
 
-* [mlmm.r](), the original MLMM as described in [Segura, Vilhjálmsson et al. Nat Gen 2012](http://www.nature.com/ng/journal/v44/n7/full/ng.2314.html).
-* [mlmm_cof.r]() a modified version of MLMM that allow including a fixed covariate in the association model. This could be for example a matrix of principal components scores (MLMM version of the "PK" model) or any feature that would make sense to regress out (e.g. sex).
+* [mlmm.r](mlmm.r), the original MLMM as described in [Segura, Vilhjálmsson et al. Nat Gen 2012](http://www.nature.com/ng/journal/v44/n7/full/ng.2314.html).
+* [mlmm_cof.r](mlmm_cof.r) a modified version of MLMM that allow including a fixed covariate in the association model. This could be for example a matrix of principal components scores (MLMM version of the "PK" model) or any feature that would make sense to regress out (e.g. sex).
 
 In their current versions, the MLMM functions do not allow for missing values in the genotype matrix. Whenever possible we would suggest imputing the genotypic data prior to the analysis.
 
