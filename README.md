@@ -18,6 +18,7 @@ In their current versions, the MLMM functions do not allow for missing values in
 ### MLMM.r
 R script to perform mlmm
 
+```R
 #set your working directory
 setwd('my_directory')
  
@@ -51,10 +52,12 @@ plot_fwd_GWAS(mygwas,3,example_data$snp_info,0.1)
 plot_opt_GWAS(mygwas,'extBIC',example_data$snp_info,0.1)
 #optimal step according to mbonf plot
 plot_opt_GWAS(mygwas,'mbonf',example_data$snp_info,0.1)
+```
 
 ### MLMM_COF.r
 R script to perform mlmm with covariates
 
+```R
 #set your working directory
 setwd('my_directory')
 
@@ -77,22 +80,16 @@ mygwas$step_table
 
 #EBIC plot
 plot_step_table(mygwas,'extBIC')
-
 #mbonf criterion plot
 plot_step_table(mygwas,'maxpval')
-
 #% variance plot
 plot_step_RSS(mygwas)
-
 #1st mlmm step plot
 plot_fwd_GWAS(mygwas,1,example_data$snp_info,0.1)
-
 #2nd mlmm step plot
 plot_fwd_GWAS(mygwas,2,example_data$snp_info,0.1)
-
 #3rd mlmm step plot
 plot_fwd_GWAS(mygwas,3,example_data$snp_info,0.1)
-
 #optimal step according to ebic plot
 plot_opt_GWAS(mygwas,'extBIC',example_data$snp_info,0.1)
 
@@ -103,3 +100,4 @@ plot_opt_GWAS(mygwas,'mbonf',example_data$snp_info,0.1)
 qqplot_fwd_GWAS(mygwas,5)
 qqplot_opt_GWAS(mygwas,'extBIC')
 qqplot_opt_GWAS(mygwas,'mbonf')
+```
