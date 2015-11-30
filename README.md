@@ -2,6 +2,9 @@
 --
 An efficient multi-locus mixed-model approach for genome-wide association studies in structured populations
 
+License: GPL-3
+Copyright: Vincent Segura, Bjarni J. Vilhjalmsson
+
 ## Introduction
 
 This repository contains R functions to carry out GWAS with MLMM and plot the results from the analysis.
