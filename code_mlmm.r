@@ -1,6 +1,3 @@
-#set your working directory
-setwd("/home/visegura/Doc-INRA/postdoc/Github_code_gwas/")
-
 #load the tutorial data for carrying out mlmm analysis
 genot <- read.table("data/genot.txt", sep = "\t", header = T)
 genot_mat <- as.matrix(genot[, 2:ncol(genot)])
