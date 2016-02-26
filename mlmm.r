@@ -83,7 +83,7 @@
 #
 ##############################################################################################################################################
 
-mlmm<-function(Y,X,K,nbchunks,maxsteps) {
+mlmm<-function(Y,X,K,nbchunks,maxsteps,thresh = NULL) {
 
 n<-length(Y)
 m<-ncol(X)
@@ -324,14 +324,17 @@ plot_RSS<-t(apply(cbind(expl_RSS,h2_RSS,unexpl_RSS),1,cumsum))
 
 #GLS pvals at each step
 pval_step<-list()
-pval_step[[1]]<-list(out=data.frame('SNP'=colnames(X),'pval'=pval[[2]]),cof='')
+pval_step[[1]]<-list(out=data.frame("SNP"=colnames(X),"pval"=pval[[2]]),"cof"=NA, "coef"=fwd_lm[[1]]$coef)
 for (i in 2:(length(mod_fwd))) {pval_step[[i]]<-list(out=rbind(data.frame(SNP=colnames(cof_fwd[[i]])[-1],'pval'=fwd_lm[[i]]$coef[2:i,4]),
-	data.frame(SNP=colnames(X)[-which(colnames(X) %in% colnames(cof_fwd[[i]]))],'pval'=pval[[i+1]])),cof=colnames(cof_fwd[[i]])[-1])}
+	data.frame(SNP=colnames(X)[-which(colnames(X) %in% colnames(cof_fwd[[i]]))],'pval'=pval[[i+1]])),"cof"=colnames(cof_fwd[[i]])[-1], "coef"=fwd_lm[[i]]$coef)}
 
 #GLS pvals for best models according to extBIC and mbonf
 
 opt_extBIC<-fwdbwd_table[which(fwdbwd_table$extBIC==min(fwdbwd_table$extBIC))[1],]
 opt_mbonf<-(fwdbwd_table[which(fwdbwd_table$maxpval<=0.05/m),])[which(fwdbwd_table[which(fwdbwd_table$maxpval<=0.05/m),]$ncof==max(fwdbwd_table[which(fwdbwd_table$maxpval<=0.05/m),]$ncof))[1],]
+if(! is.null(thresh)){
+  opt_thresh<-(fwdbwd_table[which(fwdbwd_table$maxpval<=thresh),])[which(fwdbwd_table[which(fwdbwd_table$maxpval<=thresh),]$ncof==max(fwdbwd_table[which(fwdbwd_table$maxpval<=thresh),]$ncof))[1],]
+}
 bestmodel_pvals<-function(model) {if(substr(model$step_,start=0,stop=3)=='fwd') {
 		pval_step[[as.integer(substring(model$step_,first=4))+1]]} else if (substr(model$step_,start=0,stop=3)=='bwd') {
 		cof<-cof_bwd[[as.integer(substring(model$step_,first=4))+1]]
@@ -355,123 +358,19 @@ bestmodel_pvals<-function(model) {if(substr(model$step_,start=0,stop=3)=='fwd') 
 		df2<-n-df1-ncol(cof)
 		Ftest<-(rep(RSS_H0,length(RSSf))/RSSf-1)*df2/df1
 		pval<-pf(Ftest,df1,df2,lower.tail=FALSE)
-		list(out=rbind(data.frame(SNP=colnames(cof)[-1],'pval'=GLS_lm$coef[2:(ncol(cof)),4]),
-		data.frame('SNP'=colnames(X)[-which(colnames(X) %in% colnames(cof))],'pval'=pval)),cof=colnames(cof)[-1])} else {cat('error \n')}}
+		list('out'=rbind(data.frame(SNP=colnames(cof)[-1],'pval'=GLS_lm$coef[2:(ncol(cof)),4]),
+		                 data.frame('SNP'=colnames(X)[-which(colnames(X) %in% colnames(cof))],'pval'=pval)),
+		     'cof'=colnames(cof)[-1],
+		     'coef'=GLS_lm$coef)} else {cat('error \n')}}
 opt_extBIC_out<-bestmodel_pvals(opt_extBIC)
 opt_mbonf_out<-bestmodel_pvals(opt_mbonf)
-
-list(step_table=fwdbwd_table,pval_step=pval_step,RSSout=plot_RSS,bonf_thresh=-log10(0.05/m),opt_extBIC=opt_extBIC_out,opt_mbonf=opt_mbonf_out)}
-
-plot_step_table<-function(x,type){
-	if (type=='h2') {plot(x$step_table$step,x$step_table$h2,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='h2')
-	abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
-    else if (type=='maxpval'){plot(x$step_table$step,-log10(x$step_table$maxpval),type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='-log10(max_Pval)')
-	abline(h=x$bonf_thresh,lty=2)
-	abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
-    else if (type=='BIC'){plot(x$step_table$step,x$step_table$BIC,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='BIC')
-	abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
-    else if (type=='extBIC'){plot(x$step_table$step,x$step_table$extBIC,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='EBIC')
-	abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
-	else {cat('error! \n argument type must be one of h2, maxpval, BIC, extBIC')}}
-
-plot_step_RSS<-function(x){
-	op<-par(mar=c(5, 5, 2, 2))
-	plot(0,0,xlim=c(0,nrow(x$RSSout)-1),ylim=c(0,1),xlab='step',ylab='%var',col=0)
-	polygon(c(0:(nrow(x$RSSout)-1),(nrow(x$RSSout)-1),0), c(x$RSSout[,3],0,0), col='brown1', border=0)
-	polygon(c(0:(nrow(x$RSSout)-1),(nrow(x$RSSout)-1),0), c(x$RSSout[,2],0,0), col='forestgreen', border=0)
-	polygon(c(0:(nrow(x$RSSout)-1),(nrow(x$RSSout)-1),0), c(x$RSSout[,1],0,0), col='dodgerblue4', border=0)
-	abline(v=(nrow(x$step_table)/2-0.5),lty=2)
-	par(op)}
-
-plot_GWAS<-function(x) {
-	output_<-x$out[order(x$out$Pos),]
-	output_ok<-output_[order(output_$Chr),]
-	
-	maxpos<-c(0,cumsum(as.numeric(aggregate(output_ok$Pos,list(output_ok$Chr),max)$x+max(cumsum(as.numeric(aggregate(output_ok$Pos,list(output_ok$Chr),max)$x)))/200)))
-	plot_col<-rep(c('gray10','gray60'),ceiling(max(unique(output_ok$Chr))/2))
-#	plot_col<-c('blue','darkgreen','red','cyan','purple')
-	size<-aggregate(output_ok$Pos,list(output_ok$Chr),length)$x
-	a<-rep(maxpos[1],size[1])
-	b<-rep(plot_col[1],size[1])
-		for (i in 2:max(unique(output_ok$Chr))){
-	a<-c(a,rep(maxpos[i],size[i]))
-	b<-c(b,rep(plot_col[i],size[i]))}
-
-	output_ok$xpos<-output_ok$Pos+a
-	output_ok$col<-b
-	output_ok$col[output_ok$SNP %in% x$cof]<-'red'
-	
-	d<-(aggregate(output_ok$xpos,list(output_ok$Chr),min)$x+aggregate(output_ok$xpos,list(output_ok$Chr),max)$x)/2
-
-	plot(output_ok$xpos,-log10(output_ok$pval),col=output_ok$col,pch=20,ylab='-log10(pval)',xaxt='n',xlab='chromosome')
-	axis(1,tick=FALSE,at=d,labels=c(1:max(unique(output_ok$Chr))))
-	abline(h=x$bonf_thresh,lty=3,col='black')}
-
-plot_region<-function(x,chrom,pos1,pos2){
-	region<-subset(x$out,Chr==chrom & Pos>=pos1 & Pos <=pos2)
-	region$col<- if (chrom %% 2 == 0) {'gray60'} else {'gray10'}
-	region$col[which(region$SNP %in% x$cof)]<-'red'
-	plot(region$Pos,-log10(region$pval),type='p',pch=20,main=paste('chromosome',chrom,sep=''),xlab='position (bp)',ylab='-log10(pval)',col=region$col,xlim=c(pos1,pos2))
-	abline(h=x$bonf_thresh,lty=3,col='black')}
-
-
-plot_fwd_GWAS<-function(x,step,snp_info,pval_filt) {
-	stopifnot(step<=length(x$pval_step))
-	output<-list(out=subset(merge(snp_info,x$pval_step[[step]]$out,by='SNP'),pval<=pval_filt),cof=x$pval_step[[step]]$cof,bonf_thresh=x$bonf_thresh)
-	plot_GWAS(output)}
-
-plot_fwd_region<-function(x,step,snp_info,pval_filt,chrom,pos1,pos2) {
-	stopifnot(step<=length(x$pval_step))
-	output<-list(out=subset(merge(snp_info,x$pval_step[[step]]$out,by='SNP'),pval<=pval_filt),cof=x$pval_step[[step]]$cof,bonf_thresh=x$bonf_thresh)
-	plot_region(output,chrom,pos1,pos2)}
-
-
-plot_opt_GWAS<-function(x,opt,snp_info,pval_filt) {
-	if (opt=='extBIC') {output<-list(out=subset(merge(snp_info,x$opt_extBIC$out,by='SNP'),pval<=pval_filt),cof=x$opt_extBIC$cof,bonf_thresh=x$bonf_thresh)
-		plot_GWAS(output)}
-	else if (opt=='mbonf') {output<-list(out=subset(merge(snp_info,x$opt_mbonf$out,by='SNP'),pval<=pval_filt),cof=x$opt_mbonf$cof,bonf_thresh=x$bonf_thresh)
-		plot_GWAS(output)}
-	else {cat('error! \n opt must be extBIC or mbonf')}}
-
-plot_opt_region<-function(x,opt,snp_info,pval_filt,chrom,pos1,pos2) {
-	if (opt=='extBIC') {output<-list(out=subset(merge(snp_info,x$opt_extBIC$out,by='SNP'),pval<=pval_filt),cof=x$opt_extBIC$cof,bonf_thresh=x$bonf_thresh)
-		plot_region(output,chrom,pos1,pos2)}
-	else if (opt=='mbonf') {output<-list(out=subset(merge(snp_info,x$opt_mbonf$out,by='SNP'),pval<=pval_filt),cof=x$opt_mbonf$cof,bonf_thresh=x$bonf_thresh)
-		plot_region(output,chrom,pos1,pos2)}
-	else {cat('error! \n opt must be extBIC or mbonf')}}
-
-
-qqplot_fwd_GWAS<-function(x,nsteps){
-	stopifnot(nsteps<=length(x$pval_step))
-	e<--log10(ppoints(nrow(x$pval_step[[1]]$out)))
-	ostep<-list()
-	ostep[[1]]<--log10(sort(x$pval_step[[1]]$out$pval))
-	for (i in 2:nsteps) {ostep[[i]]<--log10(sort(x$pval_step[[i]]$out$pval))}
-
-	maxp<-ceiling(max(unlist(ostep)))
-
-	plot(e,ostep[[1]],type='b',pch=20,cex=0.8,col=1,xlab=expression(Expected~~-log[10](italic(p))), ylab=expression(Observed~~-log[10](italic(p))),xlim=c(0,max(e)+1),ylim=c(0,maxp))
-	abline(0,1,col="dark grey")
-
-	for (i in 2:nsteps) {
-	par(new=T)
-	plot(e,ostep[[i]],type='b',pch=20,cex=0.8,col=i,axes='F',xlab='',ylab='',xlim=c(0,max(e)+1),ylim=c(0,maxp))}
-	legend(0,maxp,lty=1,pch=20,col=c(1:length(ostep)),paste(c(0:(length(ostep)-1)),'cof',sep=' '))
+if(! is.null(thresh)){
+  opt_thresh_out<-bestmodel_pvals(opt_thresh)
 }
-
-qqplot_opt_GWAS<-function(x,opt){
-	if (opt=='extBIC') {
-		e<--log10(ppoints(nrow(x$opt_extBIC$out)))
-		o<--log10(sort(x$opt_extBIC$out$pval))
-		maxp<-ceiling(max(o))
-		plot(e,o,type='b',pch=20,cex=0.8,col=1,xlab=expression(Expected~~-log[10](italic(p))), ylab=expression(Observed~~-log[10](italic(p))),xlim=c(0,max(e)+1),ylim=c(0,maxp),main=paste('optimal model according to extBIC'))
-		abline(0,1,col="dark grey")}
-	else if (opt=='mbonf') {
-		e<--log10(ppoints(nrow(x$opt_mbonf$out)))
-		o<--log10(sort(x$opt_mbonf$out$pval))
-		maxp<-ceiling(max(o))
-		plot(e,o,type='b',pch=20,cex=0.8,col=1,xlab=expression(Expected~~-log[10](italic(p))), ylab=expression(Observed~~-log[10](italic(p))),xlim=c(0,max(e)+1),ylim=c(0,maxp),main=paste('optimal model according to mbonf'))
-		abline(0,1,col="dark grey")}
-	else {cat('error! \n opt must be extBIC or mbonf')}}
-
-
+output <- list(step_table=fwdbwd_table,pval_step=pval_step,RSSout=plot_RSS,bonf_thresh=-log10(0.05/m),opt_extBIC=opt_extBIC_out,opt_mbonf=opt_mbonf_out)
+if(! is.null(thresh)){
+  output$thresh <- -log10(thresh)
+  output$opt_thresh <- opt_thresh_out
+}
+return(output)
+}
