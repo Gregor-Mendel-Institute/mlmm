@@ -1,0 +1,53 @@
+---
+title: "How to use MLMM_COF"
+author: "Vincent Segura & Bjarni J. Vilhjalmsson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MLMM_COF}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Load the `emma` package (available [online](http://mouse.cs.ucla.edu/emma/)):
+```{r load_emma}
+library(emma)
+```
+
+Load the `mlmm` package:
+```{r load_mlmm}
+library(mlmm)
+```
+
+Retrieve the data provided with the package:
+```{r get_data}
+data(example_data, package="mlmm")
+str(example_data)
+```
+
+Perform mlmm (5 steps), it can take few minutes...
+```{r fit_mlmm_cof}
+mygwas <- mlmm_cof(Y=example_data$Y, X=example_data$X,
+                   cofs=example_data$PC[,1:10], K=example_data$K,
+                   nbchunks=10, maxsteps=5)
+```
+
+Display the results (stepwise table):
+```{r res}
+mygwas$step_table
+```
+
+Plot the results:
+```{r plots}
+plot_step_table(mygwas,'extBIC') # EBIC plot
+plot_step_table(mygwas,'maxpval') # mbonf criterion plot
+plot_step_RSS(mygwas) # % variance plot
+plot_fwd_GWAS(mygwas,1,example_data$snp_info,0.1) # 1st mlmm step plot
+plot_fwd_GWAS(mygwas,2,example_data$snp_info,0.1) # 2nd mlmm step plot
+plot_fwd_GWAS(mygwas,3,example_data$snp_info,0.1) # 3rd mlmm step plot
+plot_opt_GWAS(mygwas,'extBIC',example_data$snp_info,0.1) # optimal step according to eBIC plot
+plot_opt_GWAS(mygwas,'mbonf',example_data$snp_info,0.1) # optimal step according to mbonf plot
+qqplot_fwd_GWAS(mygwas,5) # qqplot for 5 steps
+qqplot_opt_GWAS(mygwas,'extBIC') # qqplot for optimal model according to eBIC
+qqplot_opt_GWAS(mygwas,'mbonf') # qqplot for optimal model according to mbonf
+```
