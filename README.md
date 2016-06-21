@@ -19,6 +19,8 @@ For users, the easiest is to directly install the package from GitHub:
 R> library(devtools); install_github("Gregor-Mendel-Institute/mlmm")
 ```
 
+Note that this package depends on the `emma` package (not the one on CRAN, but the one from UCLA available [here](http://mouse.cs.ucla.edu/emma/)).
+
 For developpers, when editing the content of this repo, increment the version of the package in `DESCRIPTION` and execute the following commands:
 ```
 $ Rscript -e 'library(devtools); devtools::document()'
