@@ -18,4 +18,3 @@ example_data
 A dataset used as example for the mlmm function.
 }
 \keyword{datasets}
-

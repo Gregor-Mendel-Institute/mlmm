@@ -30,4 +30,3 @@ MLMM_COF
 \author{
 V. Segura & B. J. Vilhjalmsson
 }
-

@@ -4,12 +4,14 @@
 \alias{plot_step_table}
 \title{Plot}
 \usage{
-plot_step_table(x, type)
+plot_step_table(x, type, ...)
 }
 \arguments{
 \item{x}{x}
 
 \item{type}{type}
+
+\item{...}{arguments to be passed to \code{\link[graphics]{plot}}, such as \code{main}}
 }
 \description{
 Plot
@@ -17,4 +19,3 @@ Plot
 \author{
 V. Segura & B. J. Vilhjalmsson
 }
-

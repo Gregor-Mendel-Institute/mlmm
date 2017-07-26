@@ -1,7 +1,7 @@
 Package: mlmm
 Title: An efficient multi-locus mixed-model approach for genome-wide association
     studies in structured populations
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Vincent", "Segura", email="vincent.segura@orleans.inra.fr", role=c("aut")),
     person("Bjarni J.", "Vilhjalmsson", email="bjvl@birc.au.dk", role=c("aut")),
@@ -27,4 +27,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

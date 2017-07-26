@@ -4,10 +4,12 @@
 \alias{plot_step_RSS}
 \title{Plot}
 \usage{
-plot_step_RSS(x)
+plot_step_RSS(x, ...)
 }
 \arguments{
 \item{x}{x}
+
+\item{...}{arguments to be passed to \code{\link[graphics]{plot}}, such as \code{main}}
 }
 \description{
 Plot
@@ -15,4 +17,3 @@ Plot
 \author{
 V. Segura & B. J. Vilhjalmsson
 }
-
