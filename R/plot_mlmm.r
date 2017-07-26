@@ -7,15 +7,15 @@
 ##' @author V. Segura & B. J. Vilhjalmsson
 ##' @export
 plot_step_table<-function(x,type,...){
-  if (type=='h2') {graphics::plot(x$step_table$step,x$step_table$h2,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='h2')
+  if (type=='h2') {graphics::plot(x$step_table$step,x$step_table$h2,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='h2',...)
     graphics::abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
-  else if (type=='maxpval'){graphics::plot(x$step_table$step,-log10(x$step_table$maxpval),type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='-log10(max_Pval)')
+  else if (type=='maxpval'){graphics::plot(x$step_table$step,-log10(x$step_table$maxpval),type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='-log10(max_Pval)',...)
     graphics::abline(h=x$bonf_thresh,lty=2)
     if(! is.null(x$thresh)){graphics::abline(h=x$thresh,lty=2,col=2)}
     graphics::abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
-  else if (type=='BIC'){graphics::plot(x$step_table$step,x$step_table$BIC,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='BIC')
+  else if (type=='BIC'){graphics::plot(x$step_table$step,x$step_table$BIC,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='BIC',...)
     graphics::abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
-  else if (type=='extBIC'){graphics::plot(x$step_table$step,x$step_table$extBIC,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='EBIC')
+  else if (type=='extBIC'){graphics::plot(x$step_table$step,x$step_table$extBIC,type='b',lty=2,pch=20,col='darkblue',xlab='step',ylab='EBIC',...)
     graphics::abline(v=(nrow(x$step_table)/2-0.5),lty=2)}
   else {cat('error! \n argument type must be one of h2, maxpval, BIC, extBIC')}}
 
