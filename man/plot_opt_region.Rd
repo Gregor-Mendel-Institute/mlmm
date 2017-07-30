@@ -27,4 +27,3 @@ Plot
 \author{
 V. Segura & B. J. Vilhjalmsson
 }
-

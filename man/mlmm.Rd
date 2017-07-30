@@ -28,4 +28,3 @@ MLMM
 \author{
 V. Segura & B. J. Vilhjalmsson
 }
-

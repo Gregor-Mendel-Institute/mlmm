@@ -4,7 +4,7 @@
 \alias{plot_opt_GWAS}
 \title{Plot}
 \usage{
-plot_opt_GWAS(x, opt, snp_info, pval_filt)
+plot_opt_GWAS(x, opt, snp_info, pval_filt, ...)
 }
 \arguments{
 \item{x}{x}
@@ -14,6 +14,8 @@ plot_opt_GWAS(x, opt, snp_info, pval_filt)
 \item{snp_info}{snp_info}
 
 \item{pval_filt}{pval_filt}
+
+\item{...}{arguments to be passed to \code{\link[graphics]{plot}}, such as \code{main}}
 }
 \description{
 Plot
@@ -21,4 +23,3 @@ Plot
 \author{
 V. Segura & B. J. Vilhjalmsson
 }
-
