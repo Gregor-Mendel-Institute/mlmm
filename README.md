@@ -20,6 +20,7 @@ R> library(devtools); install_github("Gregor-Mendel-Institute/mlmm")
 ```
 
 Note that this package depends on the `emma` package (not the one on CRAN, but the one from UCLA available [here](http://mouse.cs.ucla.edu/emma/)).
+There is an issue in installing the original emma.zip package on Windows, so Windows users must in place use this one:[emma_1.1.2.tar.gz](https://github.com/Gregor-Mendel-Institute/mlmm/files/1356516/emma_1.1.2.tar.gz).
 
 For developpers, when editing the content of this repo, increment the version of the package in `DESCRIPTION` and execute the following commands:
 ```
